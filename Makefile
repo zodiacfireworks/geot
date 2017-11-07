@@ -33,7 +33,7 @@ SRCDIR      = src
 BUILDRESDIR = $(BUILDDIR)/resources
 BUILDRES    = $(BUILDRESDIR)/ball.wav $(BUILDRESDIR)/sansation.ttf
 SRCRESDIR   = $(SRCDIR)/resources
-SRCRES      = $(SRCRESDIR)/ball.wav $(SRCRESDIR)/sansation.ttf $(SRCRESDIR)/sphere.png $(SRCRESDIR)/brick.png $(SRCRESDIR)/grass.png
+SRCRES      = $(SRCRESDIR)/ball.wav $(SRCRESDIR)/sansation.ttf $(SRCRESDIR)/graffiti.ttf $(SRCRESDIR)/sphere.png $(SRCRESDIR)/brick.png $(SRCRESDIR)/grass.png
 
 # C++ Compiler options
 CXX     = g++

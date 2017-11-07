@@ -155,8 +155,13 @@ int main() {
     sf::Sound ballSound(ballSoundBuffer);
 
     // Carga de las fuentes para el texto para los mensajes en la pantalla
-    sf::Font font;
-    if (!font.loadFromFile(executablePath + "resources" + PATHSEP + "sansation.ttf")){
+    sf::Font fontSansation;
+    if (!fontSansation.loadFromFile(executablePath + "resources" + PATHSEP + "sansation.ttf")){
+        return EXIT_FAILURE;
+    }
+
+    sf::Font fontGraffiti;
+    if (!fontGraffiti.loadFromFile(executablePath + "resources" + PATHSEP + "graffiti.ttf")){
         return EXIT_FAILURE;
     }
 
@@ -174,7 +179,7 @@ int main() {
         return EXIT_FAILURE;
     }
     brickTexture.setSmooth(true);
-    brickTexture.setRepeated(false);
+    brickTexture.setRepeated(true);
 
     // Textura para los paneles
     sf::Texture grassTexture;
@@ -185,10 +190,10 @@ int main() {
     brickTexture.setRepeated(true);
 
     // Mensaje de bienvenida
-    std::array<sf::Text, 4> welcomeMessage;
+    std::array<sf::Text, 6> welcomeMessage;
 
     for (auto& message: welcomeMessage) {
-        message.setFont(font);
+        message.setFont(fontSansation);
         message.setCharacterSize(20);
         message.setFillColor(GreyD4);
     }
@@ -208,22 +213,30 @@ int main() {
     welcomeMessage[3].setCharacterSize(12);
     welcomeMessage[3].setString("* Presiona la barra espaciadora para comenzar.");
 
+    welcomeMessage[4].setPosition(100, 260);
+    welcomeMessage[4].setCharacterSize(12);
+    welcomeMessage[4].setString(L"* Presiona la barra espaciadora para pausar y reanudar la animación.");
+
+    welcomeMessage[5].setPosition(100, 280);
+    welcomeMessage[5].setCharacterSize(12);
+    welcomeMessage[5].setString("* Presiona la tecla R para activar y desactivar efectos.");
+
     // Mensaje de animaciones en el banner (parte superior por encima de los
     // paneles)
     std::array<sf::Text, 2> banner;
 
     for (auto& coordinate: banner) {
-        coordinate.setFont(font);
-        coordinate.setCharacterSize(10);
-        coordinate.setFillColor(GreyD4);
+        coordinate.setFont(fontGraffiti);
+        coordinate.setCharacterSize(30);
+        coordinate.setFillColor(GreyL4);
     }
 
-    banner[0].setString(L"Animación activa");
-    banner[0].setPosition(0.5f*(windowWidth - banner[0].getLocalBounds().width),5);
+    banner[0].setString(L"Animación activa: ");
+    banner[0].setPosition(10, 0.5f*(windowHeight - panelHeight - banner[0].getLocalBounds().height));
 
     banner[1].setString(L"Traslación");
-    banner[1].setCharacterSize(25);
-    banner[1].setPosition(0.5f*(windowWidth - banner[1].getLocalBounds().width), 20);
+    banner[1].setCharacterSize(30);
+    banner[1].setPosition(10 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
     banner[1].setStyle(sf::Text::Bold);
 
     // Separadores de los paneles
@@ -237,10 +250,16 @@ int main() {
     verticalSeparator.setFillColor(GreyD4);
     verticalSeparator.setPosition(panelWidth - separatorWidth/2.f, windowHeight - panelHeight);
 
+    // Creamos el campo donde se mostraran los mensajes
+    sf::RectangleShape bannerField;
+    bannerField.setSize(sf::Vector2<float>(windowWidth, windowHeight - panelHeight));
+    bannerField.setPosition(0, 0);
+    bannerField.setTexture(&brickTexture);
+    bannerField.setTextureRect(sf::IntRect(0, 0, windowWidth, windowHeight - panelHeight));
+
     // Creamos el campo (donde se movera la pelotita) ...
     sf::RectangleShape panelField;
     panelField.setSize(sf::Vector2<float>(panelWidth, panelHeight));
-    panelField.setFillColor(GreyL4);
     panelField.setPosition(0, windowHeight - panelHeight);
     panelField.setTexture(&grassTexture);
 
@@ -273,14 +292,14 @@ int main() {
     sf::CircleShape ball(ballRadius);
     // ball.setOutlineThickness(borderWidth);
     // ball.setOutlineColor(GreyD4);
-    // ball.setFillColor(Amber);
+    ball.setFillColor(GreyL4);
     ball.setOrigin(ballRadius, ballRadius);
     ball.setTexture(&ballTexture);
 
     // Clones del circulo para las animaciones
     sf::CircleShape mirrorBall = ball;
     sf::CircleShape homoteticBall(ballRadius);
-    homoteticBall.setFillColor(Amber);
+    homoteticBall.setFillColor(GreyL4);
 
     sf::Vertex homoteticAxis[2] = {
         sf::Vertex(sf::Vector2f(0,0), Red),
@@ -750,10 +769,9 @@ int main() {
             }
         }
 
-        // Limpiamos la pantalla
-        window.clear(Amber);
-
         if (isPlaying) {
+            // Limpiamos la pantalla
+            window.clear(GreyD4);
             // Dibujar páneles, obstaculos, la esfra y los efectos
             // de transformación
             window.draw(panelField);
@@ -782,11 +800,11 @@ int main() {
             if(homothecyEnabled) {
                 // Código de homotecia
                 banner[1].setString(L"Homotecia");
-                banner[1].setPosition(0.5f*(windowWidth - banner[1].getLocalBounds().width), 20);
+                // banner[1].setPosition(10 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
 
                 if (!isPause) {
                     // homoteticBall = ball;
-                    homoteticBall.setFillColor(Amber);
+                    // homoteticBall.setFillColor(Amber);
                     // sf::Vector2f scale = homoteticBall.getScale();
                     // homoteticBall.setPosition(ball.getPosition().x, ball.getPosition().y);
                     // homoteticBall.scale(1.01f, 1.01f);
@@ -808,7 +826,7 @@ int main() {
             if(rotationEnabled) {
                 // Código de rotación
                 banner[1].setString(L"Rotación");
-                banner[1].setPosition(0.5f*(windowWidth - banner[1].getLocalBounds().width), 20);
+                // banner[1].setPosition(10 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
 
                 if (!isPause) {
                     ball.rotate(5);
@@ -816,7 +834,6 @@ int main() {
             }
 
             window.draw(mirrorField);
-            window.draw(topSeparator);
             window.draw(verticalSeparator);
 
             for (auto& obstacle : mirrorObstacles) {
@@ -844,7 +861,7 @@ int main() {
 
             if(symmetryEnabled) {
                 banner[1].setString(L"Simetría");
-                banner[1].setPosition(0.5f*(windowWidth - banner[1].getLocalBounds().width), 20);
+                // banner[1].setPosition(10 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
 
                 if (!isPause) {
                     mirrorBall = ball;
@@ -853,12 +870,18 @@ int main() {
                 }
             }
 
+            window.draw(bannerField);
+            window.draw(topSeparator);
+
             // Textos del panel superior
             for (auto& animation: banner) {
                 window.draw(animation);
             }
         }
         else {
+            // Limpiamos la pantalla
+            window.clear(Amber);
+
             // Imprimir el mensaje de bienvenida
             for (auto& message: welcomeMessage) {
                 window.draw(message);
