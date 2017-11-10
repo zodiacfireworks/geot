@@ -160,10 +160,10 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    sf::Font fontGraffiti;
-    if (!fontGraffiti.loadFromFile(executablePath + "resources" + PATHSEP + "graffiti.ttf")){
-        return EXIT_FAILURE;
-    }
+    // sf::Font fontGraffiti;
+    // if (!fontGraffiti.loadFromFile(executablePath + "resources" + PATHSEP + "graffiti.ttf")){
+    //     return EXIT_FAILURE;
+    // }
 
     // Textura para la esfera
     sf::Texture ballTexture;
@@ -181,6 +181,14 @@ int main() {
     brickTexture.setSmooth(true);
     brickTexture.setRepeated(true);
 
+    // Textura para los obstaculos
+    sf::Texture flagTexture;
+    if (!flagTexture.loadFromFile(executablePath + "resources" + PATHSEP + "pe.png")) {
+        return EXIT_FAILURE;
+    }
+    flagTexture.setSmooth(true);
+    flagTexture.setRepeated(true);
+
     // Textura para los paneles
     sf::Texture grassTexture;
     if (!grassTexture.loadFromFile(executablePath + "resources" + PATHSEP + "grass.png")) {
@@ -190,7 +198,7 @@ int main() {
     brickTexture.setRepeated(true);
 
     // Mensaje de bienvenida
-    std::array<sf::Text, 6> welcomeMessage;
+    std::array<sf::Text, 7> welcomeMessage;
 
     for (auto& message: welcomeMessage) {
         message.setFont(fontSansation);
@@ -219,14 +227,17 @@ int main() {
 
     welcomeMessage[5].setPosition(100, 280);
     welcomeMessage[5].setCharacterSize(12);
-    welcomeMessage[5].setString("* Presiona la tecla R para activar y desactivar efectos.");
+    welcomeMessage[5].setString(L"* Presiona la tecla R para habilitar y deshabilitar los efectos.");
+
+    welcomeMessage[6].setPosition(100, 350);
+    welcomeMessage[6].setString(L"Porque yo creo en ti ¡Vamos Perú!");
 
     // Mensaje de animaciones en el banner (parte superior por encima de los
     // paneles)
     std::array<sf::Text, 2> banner;
 
     for (auto& coordinate: banner) {
-        coordinate.setFont(fontGraffiti);
+        coordinate.setFont(fontSansation);
         coordinate.setCharacterSize(30);
         coordinate.setFillColor(GreyL4);
     }
@@ -236,8 +247,9 @@ int main() {
 
     banner[1].setString(L"Traslación");
     banner[1].setCharacterSize(30);
-    banner[1].setPosition(10 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
+    banner[1].setPosition(30 + banner[0].getLocalBounds().left + banner[0].getLocalBounds().width, 0.5f*(windowHeight - panelHeight - banner[1].getLocalBounds().height));
     banner[1].setStyle(sf::Text::Bold);
+    banner[1].setFillColor(Red);
 
     // Separadores de los paneles
     sf::RectangleShape topSeparator;
@@ -254,7 +266,7 @@ int main() {
     sf::RectangleShape bannerField;
     bannerField.setSize(sf::Vector2<float>(windowWidth, windowHeight - panelHeight));
     bannerField.setPosition(0, 0);
-    bannerField.setTexture(&brickTexture);
+    bannerField.setTexture(&flagTexture);
     bannerField.setTextureRect(sf::IntRect(0, 0, windowWidth, windowHeight - panelHeight));
 
     // Creamos el campo (donde se movera la pelotita) ...
